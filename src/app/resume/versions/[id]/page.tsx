@@ -253,7 +253,7 @@ function SectionBody({ s, doc, mode, update, setBullet }: { s: SectionName; doc:
             <ul className="mt-1.5 space-y-1.5">
               {it.bullets.map((b, bi) => (
                 <li key={b.source_id} className="flex items-start gap-1.5 text-[13px]">
-                  <span className="mt-2 text-faint">•</span>
+                  <span className={cn("text-faint", editing ? "mt-2" : "")}>•</span>
                   {editing ? (
                     <>
                       <Textarea rows={Math.max(1, Math.ceil(b.text.length / 115))} className="min-h-0 py-1.5" value={b.text} onChange={(e) => setBullet(s, it.id, b.source_id, e.target.value)} />

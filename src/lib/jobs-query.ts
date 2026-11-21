@@ -57,7 +57,7 @@ export async function listJobs(db: DB, userId: string, p: ListParams) {
     else if (s === "matched") jobs = jobs.filter((j) => (j.match_score ?? 0) >= (p.minMatch ?? 65));
     else if (s) jobs = jobs.filter((j) => j.application && s.includes(j.application.application_status));
   }
-  const filters: JobFilters = { hide_duplicates: p.view !== "duplicates", ...(p.filters ?? {}) };
+  const filters: JobFilters = { hide_duplicates: p.view !== "duplicates", ...(p.filters ?? {}), include_hidden: p.view === "hidden" };
   const { kept, excluded } = filterJobs(jobs, filters, { usdInr: p.usdInr });
   const sorted = sortJobs(kept, p.sort ?? (p.view === "matches" ? "score" : "discovered"), p.usdInr);
   const offset = p.offset ?? 0;

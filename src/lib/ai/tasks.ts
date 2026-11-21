@@ -178,6 +178,9 @@ CANDIDATE: ${JSON.stringify(digest)}`,
   return { content, flags, method: "ai" };
 }
 
+/** Append a period unless the text already ends with sentence punctuation (e.g. "Pvt. Ltd."). */
+const sentence = (s: string) => (/[.!?]$/.test(s.trim()) ? s.trim() : `${s.trim()}.`);
+
 export function letterTemplate(p: CareerProfile, job: NormalizedJob, kind: LetterKind): { content: string; flags: string[] } {
   const kp = jobKeywordProfile(job);
   const recent = p.experience[0];
@@ -198,14 +201,14 @@ export function letterTemplate(p: CareerProfile, job: NormalizedJob, kind: Lette
     case "linkedin":
       return { content: `Hi — I'm ${p.name}${role ? `, most recently ${role}` : ""}. I'm applying for the ${job.title} role at ${job.company} and would value connecting.`.slice(0, 300), flags };
     case "intro":
-      return { content: `I'm ${p.name}${role ? `, most recently ${role}` : ""}. ${ev ? `In that work, ${ev}.` : ""} ${skillsLine} I'd welcome the chance to bring this to the ${job.title} role at ${job.company}.`.replace(/\s+/g, " ").trim(), flags };
+      return { content: `${sentence(`I'm ${p.name}${role ? `, most recently ${role}` : ""}`)} ${ev ? sentence(`In that work, ${ev}`) : ""} ${skillsLine} I'd welcome the chance to bring this to the ${job.title} role at ${job.company}.`.replace(/\s+/g, " ").trim(), flags };
     case "recruiter":
-      return { content: `Hi,\n\nI'm interested in the ${job.title} position at ${job.company}. ${role ? `I most recently worked as ${role}, where ` : ""}${evidence[0] ? `I ${lc(evidence[0].b.text)}.` : ""} ${skillsLine}\n\nCould we discuss whether my background fits what the team needs?\n\nThanks,\n${p.name}`, flags };
+      return { content: `Hi,\n\nI'm interested in the ${job.title} position at ${job.company}. ${role ? `I most recently worked as ${role}, where ` : ""}${evidence[0] ? sentence(`I ${lc(evidence[0].b.text)}`) : ""} ${skillsLine}\n\nCould we discuss whether my background fits what the team needs?\n\nThanks,\n${p.name}`, flags };
     case "email":
-      return { content: `Subject: Application – ${job.title} – ${p.name}\n\nDear Hiring Team,\n\nI'm writing to apply for the ${job.title} role at ${job.company}. ${ev ? `Most relevant to this role: ${ev}.` : ""} ${skillsLine}${edu ? ` I hold a ${edu}.` : ""}\n\nMy tailored resume is attached. I'd be glad to discuss how I can contribute.\n\nBest regards,\n${p.name}\n${[p.phone, p.email].filter(Boolean).join(" | ")}`, flags };
+      return { content: `Subject: Application – ${job.title} – ${p.name}\n\nDear Hiring Team,\n\nI'm writing to apply for the ${job.title} role at ${job.company}. ${ev ? sentence(`Most relevant to this role: ${ev}`) : ""} ${skillsLine}${edu ? ` I hold a ${edu}.` : ""}\n\nMy tailored resume is attached. I'd be glad to discuss how I can contribute.\n\nBest regards,\n${p.name}\n${[p.phone, p.email].filter(Boolean).join(" | ")}`, flags };
     default:
       return {
-        content: `Dear Hiring Team,\n\nI'm applying for the ${job.title} position at ${job.company}.${role ? ` I most recently worked as ${role}.` : ""}\n\n${ev ? `${ev.charAt(0).toUpperCase() + ev.slice(1)}.` : ""} ${skillsLine}\n\n${edu ? `I hold a ${edu}${p.education[0]?.institution ? ` from ${p.education[0].institution}` : ""}. ` : ""}I'm drawn to this role because it matches the work I have been doing, and I would bring careful, guideline-driven attention to quality to your team.\n\nThank you for your consideration.\n\nSincerely,\n${p.name}`,
+        content: `Dear Hiring Team,\n\nI'm applying for the ${job.title} position at ${job.company}.${role ? ` ${sentence(`I most recently worked as ${role}`)}` : ""}\n\n${ev ? sentence(ev.charAt(0).toUpperCase() + ev.slice(1)) : ""} ${skillsLine}\n\n${edu ? `I hold a ${edu}${p.education[0]?.institution ? ` from ${p.education[0].institution}` : ""}. ` : ""}I'm drawn to this role because it matches the work I have been doing, and I would bring careful, guideline-driven attention to quality to your team.\n\nThank you for your consideration.\n\nSincerely,\n${p.name}`,
         flags,
       };
   }
@@ -333,9 +336,15 @@ export function answerTemplate(q: string, p: CareerProfile, job: NormalizedJob):
     .sort((a, b) => b.r - a.r)
     .slice(0, 2);
   const lc = (s: string) => s.charAt(0).toLowerCase() + s.slice(1).replace(/\.$/, "");
-  const ev = best.map((x) => `As ${x.e.title} at ${x.e.company}, I ${lc(x.b.text)}.`).join(" ");
+  const ev = best.map((x) => sentence(`As ${x.e.title} at ${x.e.company}, I ${lc(x.b.text)}`)).join(" ");
+  const { explicit, evidenced } = profileSkillSet(p);
+  const matched = [...kp.skills].filter((s) => explicit.has(s) || evidenced.has(s)).slice(0, 4);
   if (/company|why .*work (here|at)/i.test(q))
-    return { answer: `${ev}`.trim(), flags: [`Add something specific you value about ${job.company} — not in your profile.`] };
+    return { answer: `The ${job.title} role at ${job.company} lines up directly with the work I have been doing${matched.length ? ` in ${matched.join(", ")}` : ""}.`, flags: [`Add something specific you value about ${job.company} — that isn't in your profile.`] };
+  if (/why .*(apply|applying|role|position|interested)/i.test(q))
+    return { answer: `I'm applying because this role matches my recent experience. ${ev}`.trim(), flags: [] };
+  if (/fit|suitable|good match|qualif/i.test(q))
+    return { answer: `${matched.length ? `My skills in ${matched.join(", ")} map to what this role needs. ` : ""}${ev}`.trim(), flags: [] };
   if (/project/i.test(q)) {
     const pr = p.projects[0];
     return pr ? { answer: `${pr.name}: ${pr.bullets.map((b) => b.text).join(" ")}`, flags: [] } : { answer: "", flags: ["No projects in profile."] };

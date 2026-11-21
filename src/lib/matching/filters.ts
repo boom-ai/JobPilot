@@ -57,7 +57,7 @@ function rejectReason(j: FilterableJob, f: JobFilters, usdInr: number | null, no
     if (!ok) return "query";
   }
   if (f.hide_duplicates !== false && j.duplicate_of) return "duplicate";
-  if (j.hidden) return "hidden";
+  if (j.hidden && !f.include_hidden) return "hidden";
   if (f.exclude_companies?.length && f.exclude_companies.some((c) => c && normalizeCompany(c) === normalizeCompany(j.company))) return "excluded company";
   if (f.exclude_keywords?.length && f.exclude_keywords.some((k) => k && containsTerm(normalize(`${j.title} ${j.description ?? ""}`), k))) return "excluded keyword";
   const remote = jobRemote(j);

@@ -21,6 +21,18 @@ export const POST = route(async (c, req) => {
   const r = await runSearchPipeline(c.db, ctx, { ...search, id: null as unknown as string }, (m) => {
     logs.push(m);
   });
+  // Record the run as a completed agent task so source status + activity reflect real results.
+  const now = new Date().toISOString();
+  await c.db.from("agent_tasks").insert({
+    user_id: c.userId,
+    task_type: "search",
+    status: "completed",
+    payload: { adhoc: true, keywords: b.keywords ?? "" },
+    result: { inserted: r.ingest.inserted.length, duplicates: r.ingest.duplicates, excluded: r.ingest.excluded.length, sources: r.sources },
+    logs: logs.map((msg) => ({ at: now, msg })),
+    started_at: now,
+    finished_at: now,
+  });
   await logEvent(c.db, c.userId, "search_completed", `Ad-hoc search finished: ${r.ingest.inserted.length} new jobs`, {});
   return { inserted: r.ingest.inserted, duplicates: r.ingest.duplicates, excluded: r.ingest.excluded.length, sources: r.sources, logs };
 });

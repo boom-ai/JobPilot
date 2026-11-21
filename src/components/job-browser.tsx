@@ -143,7 +143,7 @@ export function JobBrowser({ view }: { view: View }) {
           <SearchIcon className="absolute left-2.5 top-2 size-4 text-faint" />
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Filter by title, company, keyword… (use OR / commas for alternatives)" className="pl-8" />
         </form>
-        <Select value={sort} onChange={(e) => setSort(e.target.value)} className="w-[190px]" aria-label="Sort by">
+        <Select value={sort} onChange={(e) => setSort(e.target.value)} className="w-[220px]" aria-label="Sort by">
           {SORTS.map((s) => <option key={s.v} value={s.v}>Sort: {s.l}</option>)}
         </Select>
         <Button icon={<SlidersHorizontal className="size-3.5" />} onClick={() => setShowFilters((s) => !s)} variant={showFilters ? "outline" : "secondary"}>

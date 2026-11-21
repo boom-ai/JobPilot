@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Bookmark, BookmarkPlus, ChevronLeft, ChevronRight, Copy, Download, ExternalLink, History, Loader2, Plus, RotateCw, Shield, X } from "lucide-react";
 import { api, del, downloadFile, post, timeAgo, useApi } from "@/lib/client";
@@ -84,8 +84,10 @@ function BrowserWorkspace() {
   const url = tab ? tab.history[tab.index] : null;
   useEffect(() => setAddress(url ?? ""), [url]);
 
+  const requested = useRef(new Set<string>());
   const load = useCallback(async (u: string, jobId: string | null, force = false) => {
-    if (!force && page[u] && page[u] !== "loading") return;
+    if (!force && requested.current.has(u)) return;
+    requested.current.add(u);
     setPage((p) => ({ ...p, [u]: "loading" }));
     try {
       const r = await api<Inspect>(`/api/browser/inspect?url=${encodeURIComponent(u)}`);
@@ -94,10 +96,11 @@ function BrowserWorkspace() {
     } catch (e) {
       setPage((p) => ({ ...p, [u]: { error: (e as Error).message } }));
     }
-  }, [page]);
+  }, []);
+  const tabJob = tab?.jobId ?? null;
   useEffect(() => {
-    if (url && tab) load(url, tab.jobId);
-  }, [url, tab, load]);
+    if (url) load(url, tabJob);
+  }, [url, tabJob, load]);
 
   const navigate = (raw: string) => {
     let u = raw.trim();

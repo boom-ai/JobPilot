@@ -121,7 +121,7 @@ function Overview({ d }: { d: Detail }) {
         <Panel title="Sources" bodyClass="space-y-1.5">
           {d.sources.map((s) => (
             <a key={s.source_name + s.source_url} href={s.source_url ?? "#"} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-md px-2 py-1.5 text-[13px] hover:bg-subtle">
-              <span>{sourceLabel(s.source_name)}</span>
+              <span>{sourceLabel(s.source_name)} <span className="text-faint">{s.source_url ? new URL(s.source_url).host.replace(/^www\./, "") : ""}</span></span>
               <span className="flex items-center gap-1 text-[11.5px] text-faint">{timeAgo(s.created_at)} <ExternalLink className="size-3" /></span>
             </a>
           ))}

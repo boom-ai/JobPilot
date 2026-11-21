@@ -245,6 +245,8 @@ export interface JobFilters {
   hide_duplicates?: boolean;
   deadline_after?: string | null;
   sources?: string[];
+  /** internal: include hidden jobs (Hidden view) */
+  include_hidden?: boolean;
 }
 
 export interface AppSettings {
