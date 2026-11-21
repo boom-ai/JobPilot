@@ -267,7 +267,7 @@ class Query implements PromiseLike<Result> {
     const store = this.db.store;
     store.reload();
     const rows = store.t(this.table);
-    let affected: Row[] = [];
+    const affected: Row[] = [];
     if (this.op === "insert" || this.op === "upsert") {
       const conflictKeys = this.upsertOpts.onConflict?.split(",").map((s) => s.trim()) ?? [PK[this.table] ?? "id"];
       for (const p of this.payload) {
