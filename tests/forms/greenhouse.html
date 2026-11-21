@@ -1,0 +1,16 @@
+<!doctype html><html><body>
+<h1>AI Data Annotation Specialist</h1>
+<form id="application-form" onsubmit="event.preventDefault(); document.body.innerHTML='<h2>Thank you for applying!</h2><p>Your application has been submitted.</p>';">
+  <div class="field"><label for="first_name">First Name *</label><input id="first_name" name="first_name" required></div>
+  <div class="field"><label for="last_name">Last Name *</label><input id="last_name" name="last_name" required></div>
+  <div class="field"><label for="email">Email *</label><input id="email" type="email" required></div>
+  <div class="field"><label for="phone">Phone</label><input id="phone"></div>
+  <div class="field"><label for="resume">Resume/CV *</label><input id="resume" type="file" required></div>
+  <div class="field"><label for="li">LinkedIn Profile</label><input id="li"></div>
+  <div class="field"><label for="q1">What is your notice period? *</label><input id="q1" required></div>
+  <div class="field"><label for="q2">Why are you interested in this role? *</label><textarea id="q2" required></textarea></div>
+  <div class="field"><label for="gender">Gender</label><select id="gender"><option></option><option>Male</option><option>Female</option></select></div>
+  <div class="field"><label for="auth">Are you legally authorized to work in India? *</label><select id="auth" required><option></option><option>Yes</option><option>No</option></select></div>
+  <div class="field"><label><input type="checkbox" id="cert" required> I certify that the information provided is accurate.</label></div>
+  <button type="submit">Submit Application</button>
+</form></body></html>

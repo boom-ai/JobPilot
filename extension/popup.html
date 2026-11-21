@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header>
+    <div class="brand"><img src="icons/icon32.png" alt="" /> Job Pilot AI</div>
+    <button id="btn-settings" class="ghost" title="Connection settings">⚙</button>
+  </header>
+
+  <section id="view-settings" hidden>
+    <p class="muted">Connect to your Job Pilot app. Create a token in Settings → Chrome extension.</p>
+    <label>App URL <input id="app-url" placeholder="https://your-app.vercel.app" /></label>
+    <label>Access token <input id="token" type="password" placeholder="jp_…" /></label>
+    <button id="btn-save" class="primary">Save & connect</button>
+    <p id="settings-msg" class="muted"></p>
+  </section>
+
+  <section id="view-main" hidden>
+    <div id="status" class="muted">Reading this page…</div>
+    <div id="job" hidden>
+      <div class="row">
+        <div>
+          <div id="job-title" class="title"></div>
+          <div id="job-company" class="muted"></div>
+        </div>
+        <div id="score" class="score">–</div>
+      </div>
+      <div id="badges" class="badges"></div>
+    </div>
+    <div class="actions">
+      <button id="btn-save-job" class="primary">Save Job</button>
+      <button id="btn-analyze">Analyze</button>
+      <button id="btn-tailor">Tailor Resume</button>
+      <button id="btn-prepare">Prepare Application</button>
+    </div>
+    <div id="apply" hidden>
+      <h3>Application assistant</h3>
+      <button id="btn-fill" class="primary wide">Fill this form</button>
+      <p class="muted small">Fills verified profile data and approved answers, attaches your tailored resume where the form allows. You review and click Submit yourself.</p>
+      <div id="fill-report" class="small"></div>
+      <div id="confirm-detected" class="note" hidden>A confirmation message was detected on this page. <button id="btn-record-confirm">Record as applied</button></div>
+      <label class="check"><input type="checkbox" id="chk-submitted" /> I submitted this application</label>
+      <button id="btn-mark-applied" disabled>Mark as applied</button>
+    </div>
+    <details id="docs" hidden>
+      <summary>Resume, cover letter & answers</summary>
+      <div id="docs-body"></div>
+    </details>
+    <footer>
+      <a id="open-app" href="#" target="_blank">Open Job Pilot ↗</a>
+    </footer>
+  </section>
+  <script src="page-scripts.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

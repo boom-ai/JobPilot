@@ -194,7 +194,7 @@ export function letterTemplate(p: CareerProfile, job: NormalizedJob, kind: Lette
   const flags: string[] = [];
   const role = recent ? `${recent.title} at ${recent.company}` : "";
   if (!recent) flags.push("No work experience in profile.");
-  const ev = evidence.map((x) => `at ${x.e.company}, I ${lc(x.b.text)}`).join("; and ");
+  const ev = evidence.map((x, i) => (i > 0 && evidence[i - 1].e.id === x.e.id ? `I also ${lc(x.b.text)}` : `at ${x.e.company}, I ${lc(x.b.text)}`)).join("; ");
   const skillsLine = matched.length ? `My relevant skills include ${matched.join(", ")}.` : "";
   const edu = p.education[0] ? `${p.education[0].degree}${p.education[0].field ? ` in ${p.education[0].field}` : ""}` : "";
   switch (kind) {
@@ -336,7 +336,7 @@ export function answerTemplate(q: string, p: CareerProfile, job: NormalizedJob):
     .sort((a, b) => b.r - a.r)
     .slice(0, 2);
   const lc = (s: string) => s.charAt(0).toLowerCase() + s.slice(1).replace(/\.$/, "");
-  const ev = best.map((x) => sentence(`As ${x.e.title} at ${x.e.company}, I ${lc(x.b.text)}`)).join(" ");
+  const ev = best.map((x, i) => sentence(i > 0 && best[i - 1].e.id === x.e.id ? `I also ${lc(x.b.text)}` : `As ${x.e.title} at ${x.e.company}, I ${lc(x.b.text)}`)).join(" ");
   const { explicit, evidenced } = profileSkillSet(p);
   const matched = [...kp.skills].filter((s) => explicit.has(s) || evidenced.has(s)).slice(0, 4);
   if (/company|why .*work (here|at)/i.test(q))

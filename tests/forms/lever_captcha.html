@@ -1,0 +1,10 @@
+<!doctype html><html><body>
+<form onsubmit="event.preventDefault(); document.body.innerHTML='<h2>Application submitted</h2><p>We have received your application.</p>';">
+  <label>Full name <input name="name" required></label>
+  <label>Email <input name="email" required></label>
+  <label>Current company <input name="org"></label>
+  <label>Resume <input type="file" name="resume"></label>
+  <label>Describe a time you disagreed with a guideline *<textarea name="custom" required></textarea></label>
+  <div class="g-recaptcha" data-sitekey="x"></div><textarea name="g-recaptcha-response" style="display:none"></textarea>
+  <button type="submit">Submit application</button>
+</form></body></html>
